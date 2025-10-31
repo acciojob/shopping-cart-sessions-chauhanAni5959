@@ -1,51 +1,57 @@
+// This is the boilerplate code given for you
+// You can modify this code
 // Product data
+// script.js
 const products = [
   { id: 1, name: "Product 1", price: 10 },
   { id: 2, name: "Product 2", price: 20 },
   { id: 3, name: "Product 3", price: 30 },
   { id: 4, name: "Product 4", price: 40 },
   { id: 5, name: "Product 5", price: 50 },
-  
 ];
 
-// DOM elements
 const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// Utility to get cart array from sessionStorage
-function getCart() {
-  const storedCart = sessionStorage.getItem("cart");
-  return storedCart ? JSON.parse(storedCart) : [];
+let cart = [];
+
+// Load cart from sessionStorage on page load
+function loadCart() {
+  const cartData = sessionStorage.getItem("shoppingCart");
+  if (cartData) {
+    cart = JSON.parse(cartData);
+  } else {
+    cart = [];
+  }
+  renderCart();
 }
 
-// Utility to save cart array to sessionStorage
-function saveCart(cart) {
-  sessionStorage.setItem("cart", JSON.stringify(cart));
+// Save current cart state to sessionStorage
+function saveCart() {
+  sessionStorage.setItem("shoppingCart", JSON.stringify(cart));
 }
 
-// Render the list of first 5 products with Add to Cart buttons
+// Render the product list with Add to Cart buttons
 function renderProducts() {
-  productList.innerHTML = "";
-  products.slice(0, 5).forEach((product) => {
+  products.forEach(product => {
     const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
+    li.textContent = `${product.name} - $${product.price} `;
+    
+    const button = document.createElement("button");
+    button.textContent = "Add to Cart";
+    button.setAttribute("data-id", product.id);
+    button.addEventListener("click", () => addToCart(product.id));
+    
+    li.appendChild(button);
     productList.appendChild(li);
   });
-
-  // Attach event listeners dynamically
-  document.querySelectorAll(".add-to-cart-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const id = parseInt(e.target.getAttribute("data-id"));
-      addToCart(id);
-    });
-  });
 }
 
-// Render cart items from sessionStorage
+// Render the cart contents inside ul#cart-list
 function renderCart() {
-  const cart = getCart();
-  cartList.innerHTML = "";
+  cartList.innerHTML = ""; // Clear current content
+  
   cart.forEach(item => {
     const li = document.createElement("li");
     li.textContent = `${item.name} - $${item.price}`;
@@ -53,26 +59,25 @@ function renderCart() {
   });
 }
 
-// Add selected product to cart and update storage and UI
+// Add product to cart by id
 function addToCart(productId) {
-  const cart = getCart();
   const product = products.find(p => p.id === productId);
   if (product) {
-    cart.push({ id: product.id, name: product.name, price: product.price });
-    saveCart(cart);
+    cart.push(product);
+    saveCart();
     renderCart();
   }
 }
 
-// Clear cart from sessionStorage and UI
+// Clear the cart and update sessionStorage and UI
 function clearCart() {
-  sessionStorage.removeItem("cart");
+  cart = [];
+  saveCart();
   renderCart();
 }
 
-// Button click event for clear cart
-clearCartBtn.addEventListener("click", clearCart);
-
-// Initialize UI on page load
+// Initialize page
 renderProducts();
-renderCart();
+loadCart();
+
+clearCartBtn.addEventListener("click", clearCart);
