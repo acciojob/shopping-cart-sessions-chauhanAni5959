@@ -1,6 +1,3 @@
-// This is the boilerplate code given for you
-// You can modify this code
-// Product data
 // script.js
 const products = [
   { id: 1, name: "Product 1", price: 10 },
@@ -18,7 +15,7 @@ let cart = [];
 
 // Load cart from sessionStorage on page load
 function loadCart() {
-  const cartData = sessionStorage.getItem("shoppingCart");
+  const cartData = sessionStorage.getItem("cart"); // Key changed to "cart"
   if (cartData) {
     cart = JSON.parse(cartData);
   } else {
@@ -29,7 +26,7 @@ function loadCart() {
 
 // Save current cart state to sessionStorage
 function saveCart() {
-  sessionStorage.setItem("shoppingCart", JSON.stringify(cart));
+  sessionStorage.setItem("cart", JSON.stringify(cart)); // Key changed to "cart"
 }
 
 // Render the product list with Add to Cart buttons
